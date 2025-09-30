@@ -1,0 +1,45 @@
+# k8s/deployment.yaml
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  # 1. 이름을 프로젝트에 맞게 변경 (예: kubepopol-deployment)
+  name: kubepopol-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      # 2. Label을 프로젝트 이름으로 통일 (app: kubepopol)
+      app: kubepopol
+  template:
+    metadata:
+      labels:
+        # 3. 여기 Label도 위와 동일하게 맞춰줍니다.
+        app: kubepopol
+    spec:
+      containers:
+      # 4. 컨테이너 이름도 명확하게 변경
+      - name: kubepopol-container
+        # 5. [가장 중요] Github Actions가 수정할 이미지 주소. 
+        #    your-dockerhub-id를 본인 ID(jewook2)로 변경하고, 앱 이름도 맞춥니다.
+        #    태그는 어떤 것이든 상관없습니다. 어차피 덮어써집니다.
+        image: "jewook2/kubepopol:latest"
+        imagePullPolicy: Always # IfNotPresent -> Always 로 변경하는 것을 추천
+        ports:
+        - containerPort: 8080
+        # 6. [중요] 지금 당장 DB를 사용하지 않는다면 이 부분은 삭제하거나 주석 처리합니다.
+        # env:
+        # - name: SPRING_DATASOURCE_URL
+        #   value: jdbc:mysql://mysql:3306/springdb
+        # - name: SPRING_DATASOURCE_USERNAME
+        #   value: springuser
+        # - name: SPRING_DATASOURCE_PASSWORD
+        #   value: springpass
+        
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "256Mi"
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
